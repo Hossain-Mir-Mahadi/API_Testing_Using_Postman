@@ -1,0 +1,332 @@
+{
+	"info": {
+		"_postman_id": "c445fa3f-5a33-48bc-9936-257e91347398",
+		"name": "Project_4",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28641602"
+	},
+	"item": [
+		{
+			"name": "Create_student",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"\r",
+							"// firstName \r",
+							"var first_name = pm.variables.replaceIn(\"{{$randomFirstName}}\");\r",
+							"pm.environment.set(\"first_name\", first_name);\r",
+							"\r",
+							" //Middle name\r",
+							" var middle_name = pm.variables.replaceIn(\"{{$randomFirstName}}\");\r",
+							" pm.environment.set(\"middle_name\", middle_name);\r",
+							"\r",
+							" //last name\r",
+							" var last_name = pm.variables.replaceIn(\"{{$randomLastName}}\");\r",
+							" pm.environment.set(\"last_name\", last_name);\r",
+							"\r",
+							" //DOB\r",
+							" var date_of_birth = pm.variables.replaceIn(\"{{$timestamp}}\");\r",
+							" pm.environment.set(\"date_of_birth\", date_of_birth);\r",
+							"\r",
+							" //create moment for understand.\r",
+							"var moment = require(\"moment\");\r",
+							"pm.environment.set(\"date_of_birth\", \"0\" + Math.floor(Math.random()*10) + \".\" + \"0\" + Math.floor(Math.random()*10) + \".\" + \"199\" +  Math.floor(Math.random()*10));\r",
+							"\r",
+							"console.log(\"date_of_birth \" + \"0\" + Math.floor(Math.random()*10) + \".\" + \"0\" + Math.floor(Math.random()*10) + \".\" + \"199\" +  Math.floor(Math.random()*10));\r",
+							"\r",
+							"/*const moment = require(\"moment\");\r",
+							"const today = moment();\r",
+							"pm.environment.set(\"checkin\", today.format(\"YYYY-MM-DD\") );*/\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// pick all data from response body \r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"// set id in environment\r",
+							"pm.environment.set(\"id\", jsonData.id);\r",
+							"\r",
+							"// varify status code is 200\r",
+							"pm.test(\"varify status code is 201\", function(){\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"//varify ms\r",
+							"pm.test(\"verifying response time is less then 300ms\", function(){\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"first_name\": \"{{first_name}}\",\r\n  \"middle_name\": \"{{middle_name}}\",\r\n  \"last_name\": \"{{last_name}}\",\r\n  \"date_of_birth\": \"{{date_of_birth}}\"\r\n}\r\n\r\n\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/studentsDetails",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"studentsDetails"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get_Student",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"console.log(jsonData.length);\r",
+							"\r",
+							"//for (i = 0; i < jsonData.length; i++) {\r",
+							"var i=2;\r",
+							"    if (jsonData[i].id == pm.environment.get(\"id\")){\r",
+							"        pm.test(\"first_name validation\", function () {\r",
+							"            pm.expect(jsonData[i].first_name).to.equal(pm.environment.get(\"first_name\"));\r",
+							"        });\r",
+							"    \r",
+							"        pm.test(\"middle_name validation\", function () {\r",
+							"            pm.expect(jsonData[i].middle_name).to.equal(pm.environment.get(\"middle_name\"))\r",
+							"        });\r",
+							"\r",
+							"        pm.test(\"last_name validation\", function () {\r",
+							"            pm.expect(jsonData[i].last_name).to.equal(pm.environment.get(\"last_name\"));\r",
+							"        });\r",
+							"\r",
+							"        pm.test(\"date_of_birth validation\", function () {\r",
+							"            pm.expect(jsonData[i].date_of_birth).to.equal(pm.environment.get(\"date_of_birth\"));\r",
+							"        });\r",
+							"\r",
+							"    }\r",
+							"    else {\r",
+							"        pm.test(\"Not Found\")\r",
+							"    }\r",
+							"    \r",
+							"//}\r",
+							"\r",
+							"// varify status code is 200\r",
+							"pm.test(\"varify status code is 200\", function(){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//varify ms\r",
+							"pm.test(\"verifying response time is less then 300ms\", function(){\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+							"});\r",
+							"//varify size\r",
+							"pm.test(\"verifying size is less then 200KB\", function(){\r",
+							"    pm.expect(pm.response.responseSize).to.be.below(20000);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"//using AI\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response is an array with at least one element\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData).to.be.an('array').that.is.not.empty;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"id is a non-negative integer\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    responseData.forEach(function (student) {\r",
+							"        pm.expect(student.id).to.be.a('number');\r",
+							"        pm.expect(student.id).to.be.at.least(0);\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"First name is a non-empty string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    responseData.forEach(function (student) {\r",
+							"        pm.expect(student.first_name).to.be.a('string').and.to.have.lengthOf.at.least(1, \"First name should not be empty\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Middle name should be a string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData).to.be.an('array');\r",
+							"\r",
+							"    responseData.forEach(function (student) {\r",
+							"        pm.expect(student.middle_name).to.be.a('string');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"last_name is a non-empty string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData).to.be.an('array');\r",
+							"\r",
+							"    responseData.forEach(function (student) {\r",
+							"        pm.expect(student.last_name).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Each student has a valid id\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    responseData.forEach(function (student) {\r",
+							"        pm.expect(student.id).to.be.a('number');\r",
+							"        pm.expect(student.id).to.be.at.least(0);\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Each student has a non-empty first name\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    responseData.forEach(function (student) {\r",
+							"        pm.expect(student.first_name).to.be.a('string').and.to.have.lengthOf.at.least(1, \"First name should not be empty\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Each student has a string middle name or an empty string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    responseData.forEach(function (student) {\r",
+							"        pm.expect(student.middle_name).to.satisfy(function (value) {\r",
+							"            return typeof value === 'string' || value === '';\r",
+							"        });\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Each student has a non-empty last name\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    responseData.forEach(function (student) {\r",
+							"        pm.expect(student.last_name).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Last name should not be empty\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"// Get the response JSON\r",
+							"var responseData = pm.response.json();\r",
+							"\r",
+							"// Test the response body structure and values\r",
+							"pm.test(\"Response body structure is valid\", function () {\r",
+							"    pm.expect(responseData).to.be.an('array').that.is.not.empty;\r",
+							"});\r",
+							"\r",
+							"// Test each student object in the response array\r",
+							"pm.test(\"Each student object has the required properties\", function () {\r",
+							"    responseData.forEach(function (student) {\r",
+							"        pm.expect(student).to.have.property('id');\r",
+							"        pm.expect(student).to.have.property('first_name');\r",
+							"        pm.expect(student).to.have.property('middle_name');\r",
+							"        pm.expect(student).to.have.property('last_name');\r",
+							"        //pm.expect(student).to.have.property('date_of_birth');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/studentsDetails/",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"studentsDetails",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get_Student Status Status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// pick all data from response body \r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"// set id in environment\r",
+							"pm.environment.set(\"id\", jsonData.id);\r",
+							"\r",
+							"// varify status code is 200\r",
+							"pm.test(\"varify status code is 200\", function(){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//varify ms\r",
+							"pm.test(\"verifying response time is less then 300ms\", function(){\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/studentsDetails/{{id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"studentsDetails",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
